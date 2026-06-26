@@ -1,0 +1,19 @@
+from pathlib import Path
+BASE_DIR=Path(__file__).resolve().parent
+UPLOAD_FOLDER=BASE_DIR/"uploads"
+CHROMA_DB_PATH=BASE_DIR/"chroma_db"
+LOG_FOLDER=BASE_DIR/"logs"
+MAX_UPLOAD_SIZE=25*1024*1024
+ALLOWED_EXTENSIONS={
+    ".pdf",
+    ".docx",
+    ".txt",
+    ".xlsx",
+    ".csv"
+}
+CHAT_MODEL="llama3.2:3b"
+EMBEDDING_MODEL="nomic-embed-text"
+CHUNK_SIZE=500
+CHUNK_OVERLAP=100
+TOP_K=5
+TEMPERATURE=0.2
