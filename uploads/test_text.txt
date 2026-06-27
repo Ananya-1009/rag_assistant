@@ -1,0 +1,3 @@
+Hello RAG!
+
+This is my first document.

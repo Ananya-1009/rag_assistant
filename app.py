@@ -6,6 +6,7 @@ from fastapi import UploadFile,File
 from datetime import datetime
 from config import ALLOWED_EXTENSIONS,MAX_UPLOAD_SIZE,UPLOAD_FOLDER
 from logger import logger
+from extractors.extractor_dispatcher import extract_document
 import shutil
 import re
 from pathlib import Path
@@ -70,7 +71,12 @@ async def upload_file(file: UploadFile=File(...)):
     with destination.open("wb") as buffer:
         shutil.copyfileobj(file.file,buffer)
     logger.info(f"Uploaded: {unique_name}")
-
+    text = extract_document(destination)
+    print("=" * 60)
+    print("EXTRACTED TEXT")
+    print("=" * 60)
+    print(text)
+    print("=" * 60)
     return{
         "success": True,
         "filename": unique_name,
