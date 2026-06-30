@@ -10,6 +10,8 @@ from extractors.extractor_dispatcher import extract_document
 import shutil
 import re
 from pathlib import Path
+from chunking.text_chunker import chunk_text
+from services.document_processor import process_document
 def secure_filename(filename:str)->str:
     filename=Path(filename).name
     filename=filename.replace(" ","_")
@@ -71,14 +73,11 @@ async def upload_file(file: UploadFile=File(...)):
     with destination.open("wb") as buffer:
         shutil.copyfileobj(file.file,buffer)
     logger.info(f"Uploaded: {unique_name}")
-    text = extract_document(destination)
-    print("=" * 60)
-    print("EXTRACTED TEXT")
-    print("=" * 60)
-    print(text)
-    print("=" * 60)
+    chunks = process_document(destination)
+    logger.info(f"Chunks created: {len(chunks)}")
     return{
         "success": True,
         "filename": unique_name,
-        "message":f"Received:{unique_name} uploaded successfully"
+        "chunks": len(chunks),
+        "message":"Document processed successfully."
     }

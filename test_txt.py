@@ -1,9 +1,18 @@
 from pathlib import Path
 
-from extractors.txt_extractor import extract_txt
+from chunking.text_chunker import chunk_text
 
-text = extract_txt(
+text = (
+    "Artificial Intelligence " * 100
+)
+
+chunks = chunk_text(
+    text,
     Path("uploads/test_text.txt")
 )
 
-print(text)
+print("Number of chunks:", len(chunks))
+
+for chunk in chunks:
+    print(chunk["chunk_id"])
+    print(len(chunk["text"]))
