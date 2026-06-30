@@ -4,6 +4,7 @@ from fastapi.templating import Jinja2Templates
 from fastapi.responses import HTMLResponse
 from fastapi import UploadFile,File
 from datetime import datetime
+
 from config import ALLOWED_EXTENSIONS,MAX_UPLOAD_SIZE,UPLOAD_FOLDER
 from logger import logger
 from extractors.extractor_dispatcher import extract_document
@@ -12,6 +13,10 @@ import re
 from pathlib import Path
 from chunking.text_chunker import chunk_text
 from services.document_processor import process_document
+from services.search_service import search_documents
+from pydantic import BaseModel
+class SearchRequest(BaseModel):
+    query:str
 def secure_filename(filename:str)->str:
     filename=Path(filename).name
     filename=filename.replace(" ","_")
@@ -73,11 +78,16 @@ async def upload_file(file: UploadFile=File(...)):
     with destination.open("wb") as buffer:
         shutil.copyfileobj(file.file,buffer)
     logger.info(f"Uploaded: {unique_name}")
-    chunks = process_document(destination)
+    chunks,embeddings=process_document(destination)
     logger.info(f"Chunks created: {len(chunks)}")
+    
     return{
         "success": True,
         "filename": unique_name,
         "chunks": len(chunks),
         "message":"Document processed successfully."
     }
+@app.post("/search")
+async def search(request:SearchRequest):
+    results=search_documents(request.query)
+    return results
