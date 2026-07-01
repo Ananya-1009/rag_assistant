@@ -9,10 +9,6 @@ def ask_question(question:str):
         query_embedding=query_embedding,
         n_results=5
     )
-    print("=" * 50)
-    print("Retrieved Documents:")
-    print(results["documents"])
-    print("=" * 50)
     prompt=build_prompt(question,results)
     answer=generate_response(prompt)
     sources=[]

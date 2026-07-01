@@ -4,4 +4,5 @@ store = ChromaStore()
 
 results = store.get_all_documents()
 
-print(results["metadatas"])
+for metadata in results["metadatas"]:
+    print(metadata["filename"])

@@ -2,6 +2,7 @@ from pathlib import Path
 from extractors.extractor_dispatcher import extract_document
 from chunking.text_chunker import chunk_text
 from embeddings.embedding_model import generate_embeddings
+from vector_store.chroma_store import ChromaStore
 import uuid
 def process_document(file_path:Path)->list[dict]:
     document_id = str(uuid.uuid4())
