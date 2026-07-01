@@ -4,7 +4,7 @@ from fastapi.templating import Jinja2Templates
 from fastapi.responses import HTMLResponse
 from fastapi import UploadFile,File
 from datetime import datetime
-
+from services.rag_service import ask_question
 from config import ALLOWED_EXTENSIONS,MAX_UPLOAD_SIZE,UPLOAD_FOLDER
 from logger import logger
 from extractors.extractor_dispatcher import extract_document
@@ -17,6 +17,8 @@ from services.search_service import search_documents
 from pydantic import BaseModel
 class SearchRequest(BaseModel):
     query:str
+class ChatRequest(BaseModel):
+    question:str
 def secure_filename(filename:str)->str:
     filename=Path(filename).name
     filename=filename.replace(" ","_")
@@ -91,3 +93,6 @@ async def upload_file(file: UploadFile=File(...)):
 async def search(request:SearchRequest):
     results=search_documents(request.query)
     return results
+@app.post("/chat")
+async def chat(request:ChatRequest):
+    return ask_question(request.question)
