@@ -1,34 +1,63 @@
 def build_prompt(query: str, results: dict) -> str:
     documents = results.get("documents", [])
+    metadatas = results.get("metadatas", [])
+
     context = ""
-    if documents and len(documents) > 0:
-        context = "\n\n".join(documents[0])
+
+    if documents and metadatas:
+        for metadata, document in zip(
+            metadatas[0],
+            documents[0]
+        ):
+            context += f"""
+    ==================================================
+    Document: {metadata["filename"]}
+    Chunk: {metadata["chunk_id"]}
+
+    {document}
+
+    """
 
     prompt = f"""
-You are a Retrieval-Augmented Generation (RAG) assistant.
+    You are a Retrieval-Augmented Generation (RAG) assistant.
 
-Use ONLY the information provided in the retrieved context.
+    Answer ONLY using the retrieved context below.
 
-Rules:
-1. Do NOT use outside knowledge.
-2. The retrieved context may contain information from multiple documents.
-3. Before answering, determine which document(s) are actually relevant to the user's question.
-4. Ignore information about unrelated people, organizations, or topics.
-5. Never combine facts from different people or documents unless the user explicitly asks for a comparison or summary across documents.
-6. If multiple documents describe different people with similar information, answer only using the information about the person asked in the question.
-7. If the answer cannot be found in the retrieved context, reply exactly:
-   "I couldn't find that information in the uploaded documents."
-8. For "Who is..." questions, provide a short descriptive paragraph instead of only the person's name.
-9. Cite only the documents that were actually used to answer the question.
+    Rules:
 
---------------------
-Retrieved Context:
-{context}
---------------------
+    1. Never use your own knowledge.
 
-Question:
-{query}
+    2. The retrieved context may contain chunks from multiple documents.
 
-Answer:
-"""
+    3. Before answering, identify which document(s) are relevant to the user's question.
+
+    4. Ignore chunks from unrelated documents.
+
+    5. Never combine information from different people or documents unless the user explicitly asks to compare or summarize multiple documents.
+
+    6. If information is missing, say:
+    "I couldn't find that information in the uploaded documents."
+
+    7. For "Who is..." questions, give a short descriptive answer instead of only returning the person's name.
+
+    8. Be concise but complete.
+
+    --------------------------------------------------
+
+    Retrieved Context:
+
+    {context}
+
+    --------------------------------------------------
+
+    Question:
+
+    {query}
+
+    Answer:
+    """
+    print("=" * 80)
+    print("PROMPT SENT TO LLM")
+    print(prompt)
+    print("=" * 80)
     return prompt
