@@ -201,3 +201,40 @@
 2026-07-03 13:55:16,457|INFO|HTTP Request: POST http://localhost:11434/api/chat "HTTP/1.1 200 OK"
 2026-07-03 13:56:16,039|INFO|HTTP Request: POST http://localhost:11434/api/chat "HTTP/1.1 200 OK"
 2026-07-03 13:57:39,264|INFO|HTTP Request: POST http://localhost:11434/api/chat "HTTP/1.1 200 OK"
+2026-07-03 14:03:41,868|INFO|Uploaded: 1_Introduction_20260703_140341.pdf
+2026-07-03 14:03:42,377|INFO|Chunks created: 11
+2026-07-03 14:04:44,578|INFO|HTTP Request: POST http://localhost:11434/api/chat "HTTP/1.1 200 OK"
+2026-07-03 14:07:54,423|INFO|HTTP Request: POST http://localhost:11434/api/chat "HTTP/1.1 200 OK"
+2026-07-03 14:20:37,998|INFO|HTTP Request: POST http://localhost:11434/api/chat "HTTP/1.1 200 OK"
+2026-07-03 14:41:31,623|INFO|HTTP Request: POST http://localhost:11434/api/chat "HTTP/1.1 200 OK"
+2026-07-03 14:45:54,332|INFO|HTTP Request: POST http://localhost:11434/api/chat "HTTP/1.1 200 OK"
+2026-07-03 14:51:02,257|INFO|HTTP Request: POST http://localhost:11434/api/chat "HTTP/1.1 200 OK"
+2026-07-03 14:53:48,179|INFO|HTTP Request: POST http://localhost:11434/api/chat "HTTP/1.1 200 OK"
+2026-07-03 17:53:58,764|INFO|HTTP Request: POST http://localhost:11434/api/chat "HTTP/1.1 200 OK"
+2026-07-03 18:04:24,829|INFO|HTTP Request: POST http://localhost:11434/api/chat "HTTP/1.1 200 OK"
+2026-07-04 10:26:37,764|INFO|Uploaded: 2774045726_1_20260704_102637.pdf
+2026-07-04 10:34:06,215|INFO|Uploaded: 2774045726_1_20260704_103406.pdf
+2026-07-04 10:34:07,176|INFO|Chunks created: 2
+2026-07-04 10:34:10,478|INFO|Uploaded: 2774045726_1_20260704_103410.pdf
+2026-07-04 10:34:10,825|INFO|Chunks created: 2
+2026-07-04 11:39:21,692|INFO|Uploaded: Android_App_Development_Storage_20260704_113921.pdf
+2026-07-04 11:43:26,261|INFO|Uploaded: rag-prompt_20260704_114326.pdf
+2026-07-04 11:43:26,766|INFO|Chunks created: 16
+2026-07-04 11:48:04,616|INFO|Uploaded: EVS-Audit-Module-1.1_20260704_114804.pdf
+2026-07-04 11:48:05,457|INFO|Chunks created: 10
+2026-07-04 11:57:39,000|INFO|Uploaded: Designing_Your_User_Interface_with_Views_20260704_115739.pdf
+2026-07-04 11:57:40,019|INFO|Chunks created: 49
+2026-07-04 11:57:40,044|INFO|Uploaded: AI_Unit_1-_3_lectures_20260704_115740.pdf
+2026-07-04 11:57:40,686|INFO|Chunks created: 32
+2026-07-04 12:00:23,012|INFO|HTTP Request: POST http://localhost:11434/api/chat "HTTP/1.1 200 OK"
+2026-07-04 16:02:05,913|INFO|HTTP Request: POST http://localhost:11434/api/chat "HTTP/1.1 200 OK"
+2026-07-04 17:44:47,369|INFO|Uploaded: lecture1_20260704_174447.pdf
+2026-07-04 17:44:47,923|INFO|Chunks created: 20
+2026-07-04 18:14:41,946|INFO|Uploaded: SuccessReceipt_20260704_181441.pdf
+2026-07-04 18:14:42,523|INFO|Chunks created: 1
+2026-07-04 23:49:28,263|INFO|Uploaded: AnanyaSoni_Resume__20260704_234928.pdf
+2026-07-04 23:49:29,872|INFO|Chunks created: 7
+2026-07-04 23:50:46,515|INFO|HTTP Request: POST http://localhost:11434/api/chat "HTTP/1.1 200 OK"
+2026-07-04 23:51:27,069|INFO|Uploaded: Resume_Ajitesh_Rajput2_20260704_235127.pdf
+2026-07-04 23:51:27,654|INFO|Chunks created: 6
+2026-07-04 23:52:45,488|INFO|HTTP Request: POST http://localhost:11434/api/chat "HTTP/1.1 200 OK"

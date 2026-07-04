@@ -36,3 +36,44 @@ body{
     gap:10px;
     padding: 15px;
 }
+#chat-list{
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+}
+
+.chat-item{
+    padding:10px;
+    border-radius:8px;
+    cursor:pointer;
+    background:#f3f3f3;
+    color: black;
+}
+
+.chat-item:hover{
+    background:#dcecff;
+}
+
+.chat-item.active{
+    background:#0d6efd;
+    color:white;
+}
+#document-list{
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:6px;
+}
+
+.document-item{
+
+    padding:8px;
+
+    border-radius:6px;
+
+    background:#edb9b9;
+
+    font-size:14px;
+}

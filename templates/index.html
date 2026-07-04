@@ -13,11 +13,37 @@
                 <div class="col-md-3 sidebar">
                     <h3 class="mt-3">Local RAG</h3>
                     <hr>
-                    <button id="upload-btn" class="btn btn-primary w-100 mb-2">Upload Document</button>
-                    <button class="btn btn-secondary w-100">
+                    <h6>Uploaded Documents</h6>
+                    <div id="document-list"></div>
+                    <button
+                        id="new-chat-btn"
+                        class="btn btn-success w-100 mb-3">
+                        + New Chat
+                    </button>
+
+                    <div
+                        id="chat-list"
+                        class="mb-3">
+                    </div>
+
+                    <hr>
+
+                    <button
+                        id="upload-btn"
+                        class="btn btn-primary w-100 mb-2">
+                        Upload Document
+                    </button>
+
+                    <button
+                        class="btn btn-secondary w-100">
                         Add URL
                     </button>
-                    <input type="file" id="file-input" hidden>
+
+                    <input
+                        type="file"
+                        id="file-input"
+                        hidden>
+
                 </div>
                 <div class="col-md-9 chat-area">
                     <div id="chat-window">
@@ -38,6 +64,7 @@
                 </div>
             </div>
         </div>
+        <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
         <script src="/static/app.js"></script>
     </body>
 </html>

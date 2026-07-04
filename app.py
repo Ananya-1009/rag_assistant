@@ -5,7 +5,14 @@ from fastapi.responses import HTMLResponse
 from fastapi import UploadFile,File
 from datetime import datetime
 from services.rag_service import ask_question
+from database.db import initialize_database
+from database.chat_repository import create_chat,get_all_chats,get_chat
+from database.message_repository import add_message,get_messages
+from database.document_repository import add_document,get_documents
+ 
+from storage.chat_manager import chat_manager
 from config import ALLOWED_EXTENSIONS,MAX_UPLOAD_SIZE,UPLOAD_FOLDER
+from storage.chat_manager import chat_manager
 from logger import logger
 from extractors.extractor_dispatcher import extract_document
 import shutil
@@ -29,7 +36,9 @@ def generate_unique_filename(filename:str)->str:
     timestamp=datetime.now().strftime("%Y%m%d_%H%M%S")
     return f"{path.stem}_{timestamp}{path.suffix}"
 app=FastAPI(title="Local RAG Assistant")
-
+initialize_database()
+if len(get_all_chats())==0:
+    create_chat("Chat 1")
 from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent
@@ -80,7 +89,11 @@ async def upload_file(file: UploadFile=File(...)):
     with destination.open("wb") as buffer:
         shutil.copyfileobj(file.file,buffer)
     logger.info(f"Uploaded: {unique_name}")
+    chat_id = chat_manager.get_chat_id()
+    print(f"Current Chat: {chat_id}")
     chunks,embeddings=process_document(destination)
+    document_id=chunks[0]["document_id"]
+    add_document(chat_id,document_id,unique_name)
     logger.info(f"Chunks created: {len(chunks)}")
     
     return{
@@ -95,4 +108,61 @@ async def search(request:SearchRequest):
     return results
 @app.post("/chat")
 async def chat(request:ChatRequest):
-    return ask_question(request.question)
+    chat_id=chat_manager.get_chat_id()
+    add_message(chat_id,"user",request.question)
+    result=ask_question(request.question)
+    add_message(chat_id,"assistant",result["answer"])
+    return result
+@app.post("/new_chat")
+async def new_chat():
+    chats=get_all_chats()
+    title=f"Chat {len(chats)+1}"
+    chat_id=create_chat(title)
+    chat_manager.set_chat(chat_id)
+    return{
+        "chat_id":chat_id,
+        "title":title
+    }
+@app.get("/chats")
+async def get_chats():
+    chats=get_all_chats()
+    return [
+        {
+            "id":chat["id"],
+            "title":chat["title"]
+        }
+        for chat in chats
+    ]
+@app.post("/switch_chat/{chat_id}")
+async def switch_chat(chat_id:str):
+    chat=get_chat(chat_id)
+    if chat is None:
+        return{
+            "success":False
+        }
+    chat_manager.set_chat(chat_id)
+    return{
+        "success":True
+    }
+@app.get("/documents")
+async def documents():
+    chat_id=chat_manager.get_chat_id()
+    docs=get_documents(chat_id)
+    return [
+        {
+            "filename":doc["filename"],
+            "document_id":doc["document_id"]
+        }
+        for doc in docs
+    ]
+@app.get("/messages")
+async def get_chat_messages():
+    chat_id=chat_manager.get_chat_id()
+    messages=get_messages(chat_id)
+    return [
+        {
+            "role":message["role"],
+            "message":message["message"]
+        }
+        for message in messages
+    ]
