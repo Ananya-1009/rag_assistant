@@ -1,9 +1,16 @@
-def build_prompt(query: str, results: dict) -> str:
+def build_prompt(query: str, results: dict,conversation_history: list = None) -> str:
     documents = results.get("documents", [])
     metadatas = results.get("metadatas", [])
 
     context = ""
+    history = ""
 
+    if conversation_history:
+        history = "Conversation History:\n\n"
+
+        for message in conversation_history:
+            role = message["role"].capitalize()
+            history += f"{role}: {message['message']}\n\n"
     if documents and metadatas:
         for metadata, document in zip(
             metadatas[0],
@@ -21,7 +28,16 @@ def build_prompt(query: str, results: dict) -> str:
     prompt = f"""
     You are a Retrieval-Augmented Generation (RAG) assistant.
 
-    Answer ONLY using the retrieved context below.
+    Use the conversation history to understand references
+    such as "he", "she", "it", "that", or follow-up questions.
+
+    Use ONLY the retrieved context to answer factual questions
+    about the uploaded documents.
+
+    If the user asks about the conversation itself
+    (for example "What was my first question?"
+    or "Summarize our conversation"),
+    answer using the conversation history.
 
     Rules:
 
@@ -52,6 +68,10 @@ def build_prompt(query: str, results: dict) -> str:
 
     9. Mention the source(s) only at the end under a heading named "Sources".
     10. Do not mention chunk numbers or document names in the answer body. Mention only the document filenames under the "Sources" section at the end.
+   --------------------------------------------------
+
+    {history}
+
     --------------------------------------------------
 
     Retrieved Context:
@@ -60,10 +80,9 @@ def build_prompt(query: str, results: dict) -> str:
 
     --------------------------------------------------
 
-    Question:
+    Current Question:
 
     {query}
-
     Answer:
     """
     print("=" * 80)

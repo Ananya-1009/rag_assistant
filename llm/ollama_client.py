@@ -12,3 +12,20 @@ def generate_response(prompt:str)->str:
         ]
     )
     return response["message"]["content"]
+def stream_response(prompt: str):
+    stream = client.chat(
+        model=MODEL_NAME,
+        messages=[
+            {
+                "role": "user",
+                "content": prompt
+            }
+        ],
+        stream=True
+    )
+
+    for chunk in stream:
+        content = chunk["message"]["content"]
+
+        if content:
+            yield content

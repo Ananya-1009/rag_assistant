@@ -116,7 +116,7 @@ document.addEventListener("DOMContentLoaded",()=>{
         button.disabled = true;
         button.textContent = "Thinking...";
         try{
-            const response=await fetch("/chat",{
+            const response=await fetch("/chat_stream",{
                 method:"POST",
                 headers:{
                     "Content-Type":"application/json"
@@ -125,20 +125,34 @@ document.addEventListener("DOMContentLoaded",()=>{
                     question:text
                 })
             });
-            const result=await response.json();
-            let responseText=result.answer;
-            if(result.sources && result.sources.length>0){
-                responseText += "\n\n---\n\n";
-                responseText += "### Sources\n\n";
-                const filenames=[...new Set(
-                    result.sources.map(source=>source.filename)
-                )];
-                filenames.forEach(filename=>{
-                    responseText += `- ${filename}\n`;
-                });
+            const reader=response.body.getReader();
+            const decoder=new TextDecoder();
+            let answer="";
+            let buffer="";
+            while (true){
+                const {done,value}=await reader.read();
+                if(done) break;
+                buffer+=decoder.decode(value);
+                const lines=buffer.split("\n");
+                buffer=lines.pop();
+                for(const line of lines){
+                    if (!line.trim()) continue;
+                    const event=JSON.parse(line);
+                    if(event.type==="token"){
+                        answer += event.content;
+                        thinkingMessage.innerHTML=marked.parse(answer);
+                    }
+                    if(event.type==="sources"){
+                        answer+="\n\n---\n\n";
+                        answer+="### Sources\n\n";
+                        event.data.forEach(file=>{
+                            answer+=`- ${file}\n`;
+                        });
+                        thinkingMessage.innerHTML=marked.parse(answer);
+                    }
+                } 
+                chatWindow.scrollTop=chatWindow.scrollHeight;
             }
-            console.log(marked.parse(responseText));
-            thinkingMessage.innerHTML=marked.parse(responseText);
             button.disabled=false;
             button.textContent="Send";
             messageInput.focus();

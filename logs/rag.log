@@ -238,3 +238,19 @@
 2026-07-04 23:51:27,069|INFO|Uploaded: Resume_Ajitesh_Rajput2_20260704_235127.pdf
 2026-07-04 23:51:27,654|INFO|Chunks created: 6
 2026-07-04 23:52:45,488|INFO|HTTP Request: POST http://localhost:11434/api/chat "HTTP/1.1 200 OK"
+2026-07-06 13:03:10,695|INFO|HTTP Request: POST http://localhost:11434/api/chat "HTTP/1.1 200 OK"
+2026-07-06 13:11:18,623|INFO|HTTP Request: POST http://localhost:11434/api/chat "HTTP/1.1 200 OK"
+2026-07-06 13:42:12,004|INFO|Uploaded: AnanyaSoni_Resume__20260706_134212.pdf
+2026-07-06 13:42:12,433|INFO|Chunks created: 7
+2026-07-06 13:43:17,510|INFO|HTTP Request: POST http://localhost:11434/api/chat "HTTP/1.1 200 OK"
+2026-07-06 13:44:11,223|INFO|HTTP Request: POST http://localhost:11434/api/chat "HTTP/1.1 200 OK"
+2026-07-06 13:45:46,852|INFO|HTTP Request: POST http://localhost:11434/api/chat "HTTP/1.1 200 OK"
+2026-07-06 13:48:48,392|INFO|HTTP Request: POST http://localhost:11434/api/chat "HTTP/1.1 200 OK"
+2026-07-06 19:24:33,270|INFO|HTTP Request: POST http://localhost:11434/api/chat "HTTP/1.1 200 OK"
+2026-07-06 19:28:25,180|INFO|HTTP Request: POST http://localhost:11434/api/chat "HTTP/1.1 200 OK"
+2026-07-06 19:30:48,429|INFO|HTTP Request: POST http://localhost:11434/api/chat "HTTP/1.1 200 OK"
+2026-07-06 19:31:43,641|INFO|HTTP Request: POST http://localhost:11434/api/chat "HTTP/1.1 200 OK"
+2026-07-06 19:44:54,593|INFO|HTTP Request: POST http://localhost:11434/api/chat "HTTP/1.1 200 OK"
+2026-07-06 20:47:01,510|INFO|HTTP Request: POST http://localhost:11434/api/chat "HTTP/1.1 200 OK"
+2026-07-06 20:49:46,161|INFO|HTTP Request: POST http://localhost:11434/api/chat "HTTP/1.1 200 OK"
+2026-07-06 21:02:06,006|INFO|HTTP Request: POST http://localhost:11434/api/chat "HTTP/1.1 200 OK"

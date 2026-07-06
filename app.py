@@ -7,9 +7,12 @@ from datetime import datetime
 from services.rag_service import ask_question
 from database.db import initialize_database
 from database.chat_repository import create_chat,get_all_chats,get_chat
+import json
 from database.message_repository import add_message,get_messages
 from database.document_repository import add_document,get_documents
- 
+from fastapi.responses import StreamingResponse
+from llm.ollama_client import stream_response
+from services.rag_service import prepare_question
 from storage.chat_manager import chat_manager
 from config import ALLOWED_EXTENSIONS,MAX_UPLOAD_SIZE,UPLOAD_FOLDER
 from storage.chat_manager import chat_manager
@@ -113,6 +116,38 @@ async def chat(request:ChatRequest):
     result=ask_question(request.question)
     add_message(chat_id,"assistant",result["answer"])
     return result
+@app.post("/chat_stream")
+async def chat_stream(request:ChatRequest):
+    chat_id=chat_manager.get_chat_id()
+    add_message(chat_id,"user",request.question)
+    prompt,results=prepare_question(request.question)
+    sources=[]
+    metadatas=results.get("metadatas",[])
+    if metadatas:
+        for metadata in metadatas[0]:
+            sources.append(metadata["filename"])
+    async def generate():
+        full_answer=""
+        for token in stream_response(prompt):
+            full_answer+=token
+            yield json.dumps({
+                "type":"token",
+                "content":token
+            })+"\n"
+        add_message(chat_id,"assistant",full_answer)
+        filenames=[]
+        seen=set()
+        for metadata in results["metadatas"][0]:
+            filename=metadata["filename"]
+            if filename not in seen:
+                filenames.append(filename)
+                seen.add(filename)
+        
+        yield json.dumps({
+            "type": "sources",
+            "data": filenames
+        }) + "\n"
+    return StreamingResponse(generate(),media_type="application/x-ndjson")
 @app.post("/new_chat")
 async def new_chat():
     chats=get_all_chats()
