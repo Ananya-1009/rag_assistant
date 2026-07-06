@@ -20,4 +20,8 @@ def get_chat(chat_id):
     chat=conn.execute("""Select * from chats where  id=?""",(chat_id,)).fetchone()
     conn.close()
     return chat
-
+def update_chat_title(chat_id,title):
+    conn=get_connection()
+    conn.execute("""Update chats set title=? where id=?""",(title,chat_id))
+    conn.commit()
+    conn.close()

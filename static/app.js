@@ -43,7 +43,43 @@ document.addEventListener("DOMContentLoaded",()=>{
         const div=document.createElement("div");
         div.className="chat-item";
         div.dataset.id=chat.id
-        div.textContent=chat.title;
+        const title = document.createElement("span");
+        title.className = "chat-title";
+        title.textContent = chat.title;
+        const menuBtn = document.createElement("button");
+        menuBtn.className = "chat-menu";
+        menuBtn.innerHTML = "⋮";
+        div.appendChild(title);
+        div.appendChild(menuBtn);
+        menuBtn.addEventListener("click", (event) => {
+            event.stopPropagation();
+            const menu = document.createElement("div");
+            menu.className = "chat-popup-menu";
+
+            menu.innerHTML = `<div class="rename-option">✏ Rename</div><div class="delete-option">🗑 Delete</div>`;
+            div.appendChild(menu);
+           
+            menu.querySelector(".rename-option").addEventListener("click", async (e) => {
+                e.stopPropagation();
+                const newTitle = prompt("Rename chat",chat.title);
+            if(!newTitle) return;
+            await fetch(`/chats/${chat.id}`,{
+                method:"PUT",
+                headers:{
+                    "Content-Type":"application/json"
+                },
+                body:JSON.stringify({
+                    title:newTitle})
+                });
+                menu.remove();
+                await loadChats();
+});
+            document.addEventListener(
+                "click",
+                () => menu.remove(),
+                { once: true }
+            );
+        });
         div.addEventListener("click", async () => {
             await fetch(`/switch_chat/${chat.id}`, {
                 method: "POST"
@@ -153,6 +189,7 @@ document.addEventListener("DOMContentLoaded",()=>{
                 } 
                 chatWindow.scrollTop=chatWindow.scrollHeight;
             }
+            await loadChats();
             button.disabled=false;
             button.textContent="Send";
             messageInput.focus();

@@ -7,7 +7,11 @@ from datetime import datetime
 from services.rag_service import ask_question
 from database.db import initialize_database
 from database.chat_repository import create_chat,get_all_chats,get_chat
+from database.chat_repository import get_chat, update_chat_title
+from utils.chat_title import generate_title
 import json
+from database.chat_repository import (get_chat,update_chat_title)
+from utils.chat_title import generate_title
 from database.message_repository import add_message,get_messages
 from database.document_repository import add_document,get_documents
 from fastapi.responses import StreamingResponse
@@ -29,6 +33,8 @@ class SearchRequest(BaseModel):
     query:str
 class ChatRequest(BaseModel):
     question:str
+class RenameChatRequest(BaseModel):
+    title: str
 def secure_filename(filename:str)->str:
     filename=Path(filename).name
     filename=filename.replace(" ","_")
@@ -112,6 +118,9 @@ async def search(request:SearchRequest):
 @app.post("/chat")
 async def chat(request:ChatRequest):
     chat_id=chat_manager.get_chat_id()
+    if chat["title"].startswith("Chat"):
+        title=generate_title(request.question)
+        update_chat_title(chat_id,title)
     add_message(chat_id,"user",request.question)
     result=ask_question(request.question)
     add_message(chat_id,"assistant",result["answer"])
@@ -119,6 +128,10 @@ async def chat(request:ChatRequest):
 @app.post("/chat_stream")
 async def chat_stream(request:ChatRequest):
     chat_id=chat_manager.get_chat_id()
+    chat = get_chat(chat_id)
+    if chat["title"].startswith("Chat"):
+        title = generate_title(request.question)
+        update_chat_title(chat_id, title)
     add_message(chat_id,"user",request.question)
     prompt,results=prepare_question(request.question)
     sources=[]
@@ -201,3 +214,7 @@ async def get_chat_messages():
         }
         for message in messages
     ]
+@app.put("/chats/{chat_id}")
+async def rename_chat(chat_id: str, request: RenameChatRequest):
+    update_chat_title(chat_id, request.title)
+    return {"success": True}

@@ -65,9 +65,8 @@ def build_prompt(query: str, results: dict,conversation_history: list = None) ->
     7. For definitions, start with a one- or two-sentence definition, then explain in sections.
 
     8. Keep the answer concise, avoid repetition, and preserve important technical details.
-
-    9. Mention the source(s) only at the end under a heading named "Sources".
-    10. Do not mention chunk numbers or document names in the answer body. Mention only the document filenames under the "Sources" section at the end.
+    9. Do NOT include sources, filenames, document names, or chunk numbers in your answer.
+    The application will display the sources separately.
    --------------------------------------------------
 
     {history}
