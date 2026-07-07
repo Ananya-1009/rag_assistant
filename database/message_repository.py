@@ -9,3 +9,11 @@ def get_messages(chat_id):
     messages=conn.execute("""Select * from messages where chat_id=? order by id""",(chat_id,)).fetchall()
     conn.close()
     return messages
+def delete_messages(chat_id):
+    conn = get_connection()
+    conn.execute(
+        "DELETE FROM messages WHERE chat_id=?",
+        (chat_id,)
+    )
+    conn.commit()
+    conn.close()

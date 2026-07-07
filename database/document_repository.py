@@ -9,3 +9,11 @@ def get_documents(chat_id):
     documents=conn.execute("""Select * from documents where chat_id=? order by id desc""",(chat_id,)).fetchall()
     conn.close()
     return documents
+def delete_documents(chat_id):
+    conn = get_connection()
+    conn.execute(
+        "DELETE FROM documents WHERE chat_id=?",
+        (chat_id,)
+    )
+    conn.commit()
+    conn.close()

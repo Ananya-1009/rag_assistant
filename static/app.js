@@ -56,7 +56,7 @@ document.addEventListener("DOMContentLoaded",()=>{
             const menu = document.createElement("div");
             menu.className = "chat-popup-menu";
 
-            menu.innerHTML = `<div class="rename-option">✏ Rename</div><div class="delete-option">🗑 Delete</div>`;
+            menu.innerHTML = `<div class="rename-option">Rename</div><div class="delete-option">Delete</div>`;
             div.appendChild(menu);
            
             menu.querySelector(".rename-option").addEventListener("click", async (e) => {
@@ -73,12 +73,34 @@ document.addEventListener("DOMContentLoaded",()=>{
                 });
                 menu.remove();
                 await loadChats();
-});
+            });
             document.addEventListener(
                 "click",
                 () => menu.remove(),
                 { once: true }
             );
+            menu.querySelector(".delete-option").addEventListener("click", async (e) => {
+                e.stopPropagation();
+                const confirmDelete=confirm(`Delete "${chat.title}"?\n\nThis action cannot be undone.`);
+                if (!confirmDelete) return;
+                const response=await fetch(`/delete_chat/${chat.id}`,{method: "DELETE"});
+                if (response.ok){
+                    menu.remove();
+                    const result = await response.json();
+                    await loadChats();
+                    document.querySelectorAll(".chat-item").forEach(item =>{
+                        item.classList.remove("active");
+                        if (item.dataset.id === result.current_chat) {
+                            item.classList.add("active");
+                        }
+                    }); 
+                    await loadMessages();
+                    await loadDocuments();
+                } 
+                else {
+                    alert("Failed to delete chat.");
+                }
+            });
         });
         div.addEventListener("click", async () => {
             await fetch(`/switch_chat/${chat.id}`, {

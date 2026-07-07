@@ -70,3 +70,5 @@ class ChromaStore:
         return self.document_collection.get(
             include=["documents", "metadatas"]
         )
+    def delete_chat(self, chat_id):
+        self.chunk_collection.delete(where={"chat_id": chat_id})

@@ -25,3 +25,12 @@ def update_chat_title(chat_id,title):
     conn.execute("""Update chats set title=? where id=?""",(title,chat_id))
     conn.commit()
     conn.close()
+def delete_chat(chat_id):
+    conn = get_connection()
+    conn.execute(
+        "DELETE FROM chats WHERE id=?",
+        (chat_id,)
+    )
+    conn.commit()
+    conn.close()
+

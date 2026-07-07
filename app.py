@@ -6,14 +6,12 @@ from fastapi import UploadFile,File
 from datetime import datetime
 from services.rag_service import ask_question
 from database.db import initialize_database
-from database.chat_repository import create_chat,get_all_chats,get_chat
-from database.chat_repository import get_chat, update_chat_title
+from database.chat_repository import create_chat,get_all_chats,get_chat,delete_chat,update_chat_title
 from utils.chat_title import generate_title
 import json
-from database.chat_repository import (get_chat,update_chat_title)
 from utils.chat_title import generate_title
-from database.message_repository import add_message,get_messages
-from database.document_repository import add_document,get_documents
+from database.message_repository import add_message,get_messages,delete_messages
+from database.document_repository import add_document,get_documents,delete_documents
 from fastapi.responses import StreamingResponse
 from llm.ollama_client import stream_response
 from services.rag_service import prepare_question
@@ -29,6 +27,8 @@ from chunking.text_chunker import chunk_text
 from services.document_processor import process_document
 from services.search_service import search_documents
 from pydantic import BaseModel
+from vector_store.chroma_store import ChromaStore
+chroma_store=ChromaStore()
 class SearchRequest(BaseModel):
     query:str
 class ChatRequest(BaseModel):
@@ -218,3 +218,25 @@ async def get_chat_messages():
 async def rename_chat(chat_id: str, request: RenameChatRequest):
     update_chat_title(chat_id, request.title)
     return {"success": True}
+@app.delete("/delete_chat/{chat_id}")
+async def delete_chat_endpoint(chat_id:str):
+    documents=get_documents(chat_id)
+    for document in documents:
+        filename=document["filename"]
+        path=UPLOAD_FOLDER/filename
+        if path.exists():
+            path.unlink()
+    chroma_store.delete_chat(chat_id)
+    delete_messages(chat_id)
+    delete_documents(chat_id)
+    delete_chat(chat_id)
+    chats=get_all_chats()
+    if chats:
+        chat_manager.set_chat(chats[0]["id"])
+    else:
+        new_chat=create_chat("Chat 1")
+        chat_manager.set_chat(new_chat)
+    return {
+        "success":True,
+        "current_chat": chat_manager.get_chat_id()
+    }
