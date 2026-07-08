@@ -13,6 +13,7 @@ document.addEventListener("DOMContentLoaded",()=>{
     const messageInput=document.getElementById("message-input");
     const chatWindow=document.getElementById("chat-window");
     const documentList =document.getElementById("document-list");
+    let currentChatId = null;
     async function loadDocuments(){
         const response=await fetch("/documents");
         const documents=await response.json();
@@ -35,87 +36,94 @@ document.addEventListener("DOMContentLoaded",()=>{
             );
         });
     }
-    async function loadChats(){
+    async function loadChats(activeChatId=null){
         const response=await fetch("/chats");
         const chats=await response.json();
         chatList.innerHTML="";
         chats.forEach(chat=>{
-        const div=document.createElement("div");
-        div.className="chat-item";
-        div.dataset.id=chat.id
-        const title = document.createElement("span");
-        title.className = "chat-title";
-        title.textContent = chat.title;
-        const menuBtn = document.createElement("button");
-        menuBtn.className = "chat-menu";
-        menuBtn.innerHTML = "⋮";
-        div.appendChild(title);
-        div.appendChild(menuBtn);
-        menuBtn.addEventListener("click", (event) => {
-            event.stopPropagation();
-            const menu = document.createElement("div");
-            menu.className = "chat-popup-menu";
+            const div=document.createElement("div");
+            div.className="chat-item";
+            div.dataset.id=chat.id
+            if(chat.id===activeChatId){
+                div.classList.add("active");
+            }
+            const title = document.createElement("span");
+            title.className = "chat-title";
+            title.textContent = chat.title;
+            const menuBtn = document.createElement("button");
+            menuBtn.className = "chat-menu";
+            menuBtn.innerHTML = "⋮";
+            div.appendChild(title);
+            div.appendChild(menuBtn);
+            menuBtn.addEventListener("click", (event) => {
+                event.stopPropagation();
+                const menu = document.createElement("div");
+                menu.className = "chat-popup-menu";
 
-            menu.innerHTML = `<div class="rename-option">Rename</div><div class="delete-option">Delete</div>`;
-            div.appendChild(menu);
-           
-            menu.querySelector(".rename-option").addEventListener("click", async (e) => {
-                e.stopPropagation();
-                const newTitle = prompt("Rename chat",chat.title);
-            if(!newTitle) return;
-            await fetch(`/chats/${chat.id}`,{
-                method:"PUT",
-                headers:{
-                    "Content-Type":"application/json"
-                },
-                body:JSON.stringify({
-                    title:newTitle})
-                });
-                menu.remove();
-                await loadChats();
-            });
-            document.addEventListener(
-                "click",
-                () => menu.remove(),
-                { once: true }
-            );
-            menu.querySelector(".delete-option").addEventListener("click", async (e) => {
-                e.stopPropagation();
-                const confirmDelete=confirm(`Delete "${chat.title}"?\n\nThis action cannot be undone.`);
-                if (!confirmDelete) return;
-                const response=await fetch(`/delete_chat/${chat.id}`,{method: "DELETE"});
-                if (response.ok){
+                menu.innerHTML = `<div class="rename-option">Rename</div><div class="delete-option">Delete</div>`;
+                div.appendChild(menu);
+            
+                menu.querySelector(".rename-option").addEventListener("click", async (e) => {
+                    e.stopPropagation();
+                    const newTitle = prompt("Rename chat",chat.title);
+                if(!newTitle) return;
+                await fetch(`/chats/${chat.id}`,{
+                    method:"PUT",
+                    headers:{
+                        "Content-Type":"application/json"
+                    },
+                    body:JSON.stringify({
+                        title:newTitle})
+                    });
+                    currentChatId = chat.id;
                     menu.remove();
-                    const result = await response.json();
-                    await loadChats();
-                    document.querySelectorAll(".chat-item").forEach(item =>{
-                        item.classList.remove("active");
-                        if (item.dataset.id === result.current_chat) {
-                            item.classList.add("active");
-                        }
-                    }); 
-                    await loadMessages();
-                    await loadDocuments();
-                } 
-                else {
-                    alert("Failed to delete chat.");
-                }
+                    await loadChats(currentChatId);
+                });
+                document.addEventListener(
+                    "click",
+                    () => menu.remove(),
+                    { once: true }
+                );
+                menu.querySelector(".delete-option").addEventListener("click", async (e) => {
+                    e.stopPropagation();
+                    const confirmDelete=confirm(`Delete "${chat.title}"?\n\nThis action cannot be undone.`);
+                    if (!confirmDelete) return;
+                    const response=await fetch(`/delete_chat/${chat.id}`,{method: "DELETE"});
+                    if (response.ok){
+                        menu.remove();
+                        const result = await response.json();
+                        currentChatId = result.current_chat;
+                        await loadChats(currentChatId);
+                        document.querySelectorAll(".chat-item").forEach(item =>{
+                            item.classList.remove("active");
+                            if (item.dataset.id === result.current_chat) {
+                                item.classList.add("active");
+                            }
+                        }); 
+                        await loadMessages();
+                        await loadDocuments();
+                    } 
+                    else {
+                        alert("Failed to delete chat.");
+                    }
+                });
             });
-        });
-        div.addEventListener("click", async () => {
-            await fetch(`/switch_chat/${chat.id}`, {
-                method: "POST"
+            div.addEventListener("click", async () => {
+                currentChatId = chat.id;
+                await fetch(`/switch_chat/${chat.id}`, {
+                    method: "POST"
+                });
+                document
+                    .querySelectorAll(".chat-item")
+                    .forEach(item => item.classList.remove("active"));
+                div.classList.add("active");
+                loadDocuments();
+                loadMessages();
+                console.log("Switched to", chat.title);
             });
-            document
-                .querySelectorAll(".chat-item")
-                .forEach(item => item.classList.remove("active"));
-            div.classList.add("active");
-            loadDocuments();
-            loadMessages();
-            console.log("Switched to", chat.title);
-        });
-        chatList.appendChild(div);});
-    }
+            chatList.appendChild(div);
+    });
+}
     function addMessage(text, sender) {
         const message = document.createElement("div");
         message.classList.add("message");
@@ -211,7 +219,7 @@ document.addEventListener("DOMContentLoaded",()=>{
                 } 
                 chatWindow.scrollTop=chatWindow.scrollHeight;
             }
-            await loadChats();
+            await loadChats(currentChatId);
             button.disabled=false;
             button.textContent="Send";
             messageInput.focus();
@@ -233,12 +241,38 @@ document.addEventListener("DOMContentLoaded",()=>{
     );
     newchatButton.addEventListener("click",async()=>{
         console.log("New Chat clicked");
-        await fetch("/new_chat",{
+        const response = await fetch("/new_chat",{
             method:"POST"
         });
-        loadChats();
+        const result = await response.json();
+        currentChatId = result.chat_id;
+        await loadChats(currentChatId);
+        await loadMessages();
+        await loadDocuments();
     });
-    loadChats();
+    loadChats(currentChatId);
     loadDocuments();
     loadMessages();
+    const urlButton=document.getElementById("url-btn");
+    urlButton.addEventListener("click",async ()=>{
+        const url=prompt("Enter a url")
+        if(!url) return;
+        const response=await fetch("/add_url",{
+            method:"POST",
+            headers:{
+                "Content-Type":"application/json"
+            },
+            body:JSON.stringify({
+                url:url
+            })
+        });
+        const result=await response.json();
+        if(result.success){
+            addMessage(`URL indexed successfully.\nIndexed ${result.chunks} chunks.`,"assistant");
+            await loadDocuments();
+        }
+        else{
+            alert("Failed.");
+        }
+    });
 });

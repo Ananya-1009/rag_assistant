@@ -1,4 +1,7 @@
-from llm.ollama_client import stream_response
+from services.url_processor import extract_text_from_url
 
-for token in stream_response("Tell me about Python."):
-    print(token, end="", flush=True)
+print(
+    extract_text_from_url(
+        "https://fastapi.tiangolo.com/"
+    )[:1000]
+)

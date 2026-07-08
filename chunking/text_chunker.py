@@ -1,11 +1,11 @@
 from pathlib import Path
 from config import CHUNK_SIZE,CHUNK_OVERLAP
-def create_chunk(chunk_id:int,text:str,file_path:Path,document_id)->dict:
-    return{
-        "chunk_id":chunk_id,
-        "filename":file_path.name,
-        "filetype":file_path.suffix.lower(),
-        "text":text,
+def create_chunk(chunk_id:int,text:str,filename:str,filetype:str,document_id:str)->dict:
+    return {
+        "chunk_id": chunk_id,
+        "filename": filename,
+        "filetype": filetype,
+        "text": text,
         "document_id": document_id,
     }
 def find_split_position(text:str,start:int,end:int)->int:
@@ -20,10 +20,7 @@ def find_split_position(text:str,start:int,end:int)->int:
     if space!=-1:
         return space
     return end
-def chunk_text(
-        text:str,
-        file_path:Path,document_id
-)->list[dict]:
+def chunk_text(text:str,filename:str,filetype:str,document_id:str)->list[dict]:
     chunks=[]
     chunk_id=1
     for start in range(0,len(text),CHUNK_SIZE):
@@ -35,7 +32,8 @@ def chunk_text(
             create_chunk(
                 chunk_id=chunk_id,
                 text=chunk,
-                file_path=file_path,
+                filename=filename,
+                filetype=filetype,
                 document_id=document_id
             )
         )

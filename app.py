@@ -28,6 +28,7 @@ from services.document_processor import process_document
 from services.search_service import search_documents
 from pydantic import BaseModel
 from vector_store.chroma_store import ChromaStore
+from services.process_url import process_url
 chroma_store=ChromaStore()
 class SearchRequest(BaseModel):
     query:str
@@ -35,6 +36,8 @@ class ChatRequest(BaseModel):
     question:str
 class RenameChatRequest(BaseModel):
     title: str
+class URLRequest(BaseModel):
+    url: str
 def secure_filename(filename:str)->str:
     filename=Path(filename).name
     filename=filename.replace(" ","_")
@@ -147,7 +150,6 @@ async def chat_stream(request:ChatRequest):
                 "type":"token",
                 "content":token
             })+"\n"
-        add_message(chat_id,"assistant",full_answer)
         filenames=[]
         seen=set()
         for metadata in results["metadatas"][0]:
@@ -155,7 +157,12 @@ async def chat_stream(request:ChatRequest):
             if filename not in seen:
                 filenames.append(filename)
                 seen.add(filename)
-        
+                answer_to_save=full_answer
+        if filenames:
+            answer_to_save+="\n\n---\n\n### Sources\n\n"
+            for file in filenames:
+                answer_to_save += f"- {file}\n"
+        add_message(chat_id,"assistant",answer_to_save)
         yield json.dumps({
             "type": "sources",
             "data": filenames
@@ -239,4 +246,14 @@ async def delete_chat_endpoint(chat_id:str):
     return {
         "success":True,
         "current_chat": chat_manager.get_chat_id()
+    }
+@app.post("/add_url")
+async def add_url(request:URLRequest):
+    chat_id=chat_manager.get_chat_id()
+    document_id,title,chunks,embeddings=process_url(request.url)
+    chroma_store.add_documents(chunks,embeddings,chat_id)
+    add_document(chat_id,document_id,title)
+    return {
+        "success": True,
+        "chunks": len(chunks)
     }

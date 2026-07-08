@@ -10,7 +10,7 @@ from storage.chat_manager import chat_manager
 def process_document(file_path:Path)->list[dict]:
     document_id = str(uuid.uuid4())
     text=extract_document(file_path)
-    chunks=chunk_text(text=text,file_path=file_path,document_id=document_id)
+    chunks=chunk_text(text=text,filename=file_path.name, filetype=file_path.suffix.lower(),document_id=document_id)
     embeddings=generate_embeddings(chunks)
     document_embedding = np.mean(embeddings,axis=0)
     document_index.add_document(document_id=document_id,filename=file_path.name,embedding=document_embedding)
