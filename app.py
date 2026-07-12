@@ -1,4 +1,4 @@
-from fastapi import FastAPI,Request
+from fastapi import FastAPI,Request,HTTPException
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from fastapi.responses import HTMLResponse
@@ -11,7 +11,7 @@ from utils.chat_title import generate_title
 import json
 from utils.chat_title import generate_title
 from database.message_repository import add_message,get_messages,delete_messages
-from database.document_repository import add_document,get_documents,delete_documents
+from database.document_repository import add_document,get_documents,delete_documents,get_document,delete_document
 from fastapi.responses import StreamingResponse
 from llm.ollama_client import stream_response
 from services.rag_service import prepare_question
@@ -135,8 +135,45 @@ async def chat_stream(request:ChatRequest):
     if chat["title"].startswith("Chat"):
         title = generate_title(request.question)
         update_chat_title(chat_id, title)
-    add_message(chat_id,"user",request.question)
     prompt,results=prepare_question(request.question)
+    add_message(chat_id,"user",request.question)
+    
+    if not results["documents"][0]:
+        no_answer = "I couldn't find that information in the uploaded documents."
+
+        add_message(chat_id, "assistant", no_answer)
+
+        async def generate():
+            yield json.dumps({
+                "type": "token",
+                "content": no_answer
+            }) + "\n"
+
+            yield json.dumps({
+                "type": "sources",
+                "data": []
+            }) + "\n"
+
+        return StreamingResponse(
+            generate(),
+            media_type="application/x-ndjson"
+        )
+    if prompt is None:
+        no_context_answer = "I couldn't find that information in the uploaded documents."
+        add_message(chat_id, "assistant", no_context_answer)
+        async def generate():
+            yield json.dumps({
+                "type": "token",
+                "content": no_context_answer
+            }) + "\n"
+            yield json.dumps({
+                "type": "sources",
+                "data": []
+            }) + "\n"
+        return StreamingResponse(
+            generate(),
+            media_type="application/x-ndjson"
+        )
     sources=[]
     metadatas=results.get("metadatas",[])
     if metadatas:
@@ -157,7 +194,7 @@ async def chat_stream(request:ChatRequest):
             if filename not in seen:
                 filenames.append(filename)
                 seen.add(filename)
-                answer_to_save=full_answer
+        answer_to_save=full_answer
         if filenames:
             answer_to_save+="\n\n---\n\n### Sources\n\n"
             for file in filenames:
@@ -249,11 +286,43 @@ async def delete_chat_endpoint(chat_id:str):
     }
 @app.post("/add_url")
 async def add_url(request:URLRequest):
-    chat_id=chat_manager.get_chat_id()
-    document_id,title,chunks,embeddings=process_url(request.url)
-    chroma_store.add_documents(chunks,embeddings,chat_id)
-    add_document(chat_id,document_id,title)
+    try:
+        chat_id=chat_manager.get_chat_id()
+        document_id,title,chunks,embeddings=process_url(request.url)
+        chroma_store.add_documents(chunks,embeddings,chat_id)
+        add_document(chat_id,document_id,title)
+        return {
+            "success": True,
+            "chunks": len(chunks)
+        }
+    except Exception as e:
+        raise HTTPException(
+            status_code=400,
+            detail=str(e)
+        )
+@app.delete("/delete_document/{document_id}")
+async def delete_document_endpoint(document_id: str):
+    document = get_document(document_id)
+
+    if document is None:
+        raise HTTPException(
+            status_code=404,
+            detail="Document not found"
+        )
+    result = chroma_store.chunk_collection.get(
+        where={"document_id": document_id}
+    )
+
+    print("Document ID:", document_id)
+    print("Chunks found:", len(result["ids"]))
+    print(result["ids"])
+    filename = document["filename"]
+    path = UPLOAD_FOLDER / filename
+    if path.exists():
+        path.unlink()
+    chroma_store.delete_document(document_id)
+    delete_document(document_id)
+
     return {
-        "success": True,
-        "chunks": len(chunks)
+        "success": True
     }

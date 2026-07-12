@@ -170,3 +170,27 @@ body{
     border-top:1px solid #ddd;
     background:white;
 }
+.document-item{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 8px;
+}
+.document-delete{
+    flex-shrink: 0;
+    border: none;
+    background: none;
+    cursor: pointer;
+    font-size: 16px;
+}
+.document-title{
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+#chat-search{
+    border-radius:10px;
+}

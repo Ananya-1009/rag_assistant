@@ -72,3 +72,11 @@ class ChromaStore:
         )
     def delete_chat(self, chat_id):
         self.chunk_collection.delete(where={"chat_id": chat_id})
+    def delete_document(self, document_id):
+        print("Before:", self.chunk_collection.count())
+        self.chunk_collection.delete(
+            where={
+                "document_id": document_id
+            })
+        print("After:", self.chunk_collection.count())
+        print("Delete complete")

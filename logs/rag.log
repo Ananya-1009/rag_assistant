@@ -278,3 +278,57 @@
 2026-07-08 16:58:48,313|INFO|HTTP Request: POST http://localhost:11434/api/chat "HTTP/1.1 200 OK"
 2026-07-08 16:59:50,800|INFO|HTTP Request: POST http://localhost:11434/api/chat "HTTP/1.1 200 OK"
 2026-07-08 17:00:59,456|INFO|HTTP Request: POST http://localhost:11434/api/chat "HTTP/1.1 200 OK"
+2026-07-08 19:52:47,040|INFO|HTTP Request: POST http://localhost:11434/api/chat "HTTP/1.1 200 OK"
+2026-07-08 19:55:17,404|INFO|Uploaded: 992401040105_Ananya_Soni_20260708_195517.pdf
+2026-07-08 19:55:18,250|INFO|Chunks created: 6
+2026-07-08 19:56:10,959|INFO|HTTP Request: POST http://localhost:11434/api/chat "HTTP/1.1 200 OK"
+2026-07-08 20:20:31,897|INFO|HTTP Request: POST http://localhost:11434/api/chat "HTTP/1.1 200 OK"
+2026-07-08 20:43:24,774|INFO|HTTP Request: POST http://localhost:11434/api/chat "HTTP/1.1 200 OK"
+2026-07-08 20:50:13,169|INFO|HTTP Request: POST http://localhost:11434/api/chat "HTTP/1.1 200 OK"
+2026-07-08 20:52:08,532|INFO|HTTP Request: POST http://localhost:11434/api/chat "HTTP/1.1 200 OK"
+2026-07-08 20:52:39,454|INFO|HTTP Request: POST http://localhost:11434/api/chat "HTTP/1.1 200 OK"
+2026-07-08 20:58:05,144|INFO|HTTP Request: POST http://localhost:11434/api/chat "HTTP/1.1 200 OK"
+2026-07-08 21:16:11,588|INFO|HTTP Request: POST http://localhost:11434/api/chat "HTTP/1.1 200 OK"
+2026-07-08 21:17:17,095|INFO|HTTP Request: POST http://localhost:11434/api/chat "HTTP/1.1 200 OK"
+2026-07-08 21:35:19,391|INFO|HTTP Request: POST http://localhost:11434/api/chat "HTTP/1.1 200 OK"
+2026-07-08 21:50:15,139|INFO|HTTP Request: POST http://localhost:11434/api/chat "HTTP/1.1 200 OK"
+2026-07-08 22:12:39,104|INFO|HTTP Request: POST http://localhost:11434/api/chat "HTTP/1.1 200 OK"
+2026-07-08 22:24:38,007|INFO|HTTP Request: POST http://localhost:11434/api/chat "HTTP/1.1 200 OK"
+2026-07-08 22:50:03,702|INFO|Uploaded: rag-prompt_20260708_225003.pdf
+2026-07-08 22:50:05,051|INFO|Chunks created: 16
+2026-07-08 22:51:07,420|INFO|HTTP Request: POST http://localhost:11434/api/chat "HTTP/1.1 200 OK"
+2026-07-08 22:53:28,463|INFO|HTTP Request: POST http://localhost:11434/api/chat "HTTP/1.1 200 OK"
+2026-07-08 22:58:16,438|INFO|HTTP Request: POST http://localhost:11434/api/chat "HTTP/1.1 200 OK"
+2026-07-09 13:42:48,869|WARNING|Neither CUDA nor MPS are available - defaulting to CPU. Note: This module is much faster with a GPU.
+2026-07-09 13:43:29,656|WARNING|Rejected upload: Screenshot 2026-07-09 134223.png
+2026-07-09 13:46:05,165|WARNING|Neither CUDA nor MPS are available - defaulting to CPU. Note: This module is much faster with a GPU.
+2026-07-09 13:46:24,270|INFO|Uploaded: Screenshot_2026-07-09_134223_20260709_134624.png
+2026-07-09 13:46:34,195|INFO|Chunks created: 2
+2026-07-09 13:47:14,885|INFO|HTTP Request: POST http://localhost:11434/api/chat "HTTP/1.1 200 OK"
+2026-07-13 00:43:15,140|WARNING|Neither CUDA nor MPS are available - defaulting to CPU. Note: This module is much faster with a GPU.
+2026-07-13 00:44:10,495|INFO|Uploaded: rag-prompt_20260713_004410.pdf
+2026-07-13 00:44:13,260|INFO|Chunks created: 16
+2026-07-13 00:45:03,872|INFO|HTTP Request: POST http://localhost:11434/api/chat "HTTP/1.1 200 OK"
+2026-07-13 00:47:34,807|INFO|Uploaded: Screenshot_2026-07-09_134223_20260713_004734.png
+2026-07-13 00:47:47,838|INFO|Chunks created: 2
+2026-07-13 00:47:49,357|INFO|Uploaded: Screenshot_2026-07-09_134223_20260713_004749.png
+2026-07-13 00:48:00,657|INFO|Chunks created: 2
+2026-07-13 00:48:24,847|INFO|HTTP Request: POST http://localhost:11434/api/chat "HTTP/1.1 200 OK"
+2026-07-13 00:50:59,288|INFO|HTTP Request: POST http://localhost:11434/api/chat "HTTP/1.1 200 OK"
+2026-07-13 00:53:56,416|INFO|HTTP Request: POST http://localhost:11434/api/chat "HTTP/1.1 200 OK"
+2026-07-13 01:08:47,365|WARNING|Neither CUDA nor MPS are available - defaulting to CPU. Note: This module is much faster with a GPU.
+2026-07-13 01:09:33,500|WARNING|Neither CUDA nor MPS are available - defaulting to CPU. Note: This module is much faster with a GPU.
+2026-07-13 01:11:48,605|WARNING|Neither CUDA nor MPS are available - defaulting to CPU. Note: This module is much faster with a GPU.
+2026-07-13 01:12:35,176|WARNING|Neither CUDA nor MPS are available - defaulting to CPU. Note: This module is much faster with a GPU.
+2026-07-13 01:13:27,487|WARNING|Neither CUDA nor MPS are available - defaulting to CPU. Note: This module is much faster with a GPU.
+2026-07-13 01:14:52,911|WARNING|Neither CUDA nor MPS are available - defaulting to CPU. Note: This module is much faster with a GPU.
+2026-07-13 01:19:06,150|WARNING|Neither CUDA nor MPS are available - defaulting to CPU. Note: This module is much faster with a GPU.
+2026-07-13 01:19:30,256|INFO|HTTP Request: POST http://localhost:11434/api/chat "HTTP/1.1 200 OK"
+2026-07-13 01:20:46,000|WARNING|Neither CUDA nor MPS are available - defaulting to CPU. Note: This module is much faster with a GPU.
+2026-07-13 01:20:57,153|INFO|HTTP Request: POST http://localhost:11434/api/chat "HTTP/1.1 200 OK"
+2026-07-13 01:21:41,872|INFO|HTTP Request: POST http://localhost:11434/api/chat "HTTP/1.1 200 OK"
+2026-07-13 01:21:59,902|INFO|HTTP Request: POST http://localhost:11434/api/chat "HTTP/1.1 200 OK"
+2026-07-13 01:23:19,261|INFO|HTTP Request: POST http://localhost:11434/api/chat "HTTP/1.1 200 OK"
+2026-07-13 01:23:48,424|INFO|HTTP Request: POST http://localhost:11434/api/chat "HTTP/1.1 200 OK"
+2026-07-13 01:24:05,478|INFO|HTTP Request: POST http://localhost:11434/api/chat "HTTP/1.1 200 OK"
+2026-07-13 01:24:24,533|INFO|HTTP Request: POST http://localhost:11434/api/chat "HTTP/1.1 200 OK"

@@ -1,7 +1,3 @@
-from services.url_processor import extract_text_from_url
-
-print(
-    extract_text_from_url(
-        "https://fastapi.tiangolo.com/"
-    )[:1000]
-)
+from services.ocr import extract_text_from_image
+text=extract_text_from_image("sample.png")
+print(text)

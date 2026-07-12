@@ -1,4 +1,4 @@
-alert("Worked")
+
 marked.setOptions({
     breaks: true,
     gfm: true
@@ -13,7 +13,10 @@ document.addEventListener("DOMContentLoaded",()=>{
     const messageInput=document.getElementById("message-input");
     const chatWindow=document.getElementById("chat-window");
     const documentList =document.getElementById("document-list");
+    const chatSearch = document.getElementById("chat-search");
+    const urlButton=document.getElementById("url-btn");
     let currentChatId = null;
+    //LOADING DOCUMENTS IN THE LEFT PANEL
     async function loadDocuments(){
         const response=await fetch("/documents");
         const documents=await response.json();
@@ -21,10 +24,35 @@ document.addEventListener("DOMContentLoaded",()=>{
         documents.forEach(doc=>{
             const div=document.createElement("div");
             div.className="document-item";
-            div.textContent=doc.filename;
+            const title=document.createElement("span");
+            title.className = "document-title";
+            title.textContent=doc.filename;
+            const deleteBtn=document.createElement("button");
+            deleteBtn.innerHTML = '<i class="bi bi-trash"></i>';
+            deleteBtn.className="document-delete";
+            div.appendChild(title);
+            div.appendChild(deleteBtn);
             documentList.appendChild(div);
+            deleteBtn.addEventListener("click", async (e) => {
+                e.stopPropagation();
+                if (!confirm(`Delete "${doc.filename}"?`))
+                    return;
+                const response = await fetch(
+                    `/delete_document/${doc.document_id}`,
+                    {
+                        method: "DELETE"
+                    }
+                );
+                if(response.ok) {
+                    await loadDocuments();
+                }
+                else{
+                    alert("Failed to delete document.");
+                }
+            });
         });
     }
+    //LOADING MESSAGES IN THE LEFT PANEL
     async function loadMessages(){
         const response= await fetch("/messages");
         const messages=await response.json();
@@ -36,6 +64,7 @@ document.addEventListener("DOMContentLoaded",()=>{
             );
         });
     }
+    //LOADING MULTIPLE CHATS IN THE PANEL
     async function loadChats(activeChatId=null){
         const response=await fetch("/chats");
         const chats=await response.json();
@@ -50,6 +79,7 @@ document.addEventListener("DOMContentLoaded",()=>{
             const title = document.createElement("span");
             title.className = "chat-title";
             title.textContent = chat.title;
+            //RENAME AND DELETE MENU BUTTON FOR CHATS
             const menuBtn = document.createElement("button");
             menuBtn.className = "chat-menu";
             menuBtn.innerHTML = "⋮";
@@ -59,10 +89,9 @@ document.addEventListener("DOMContentLoaded",()=>{
                 event.stopPropagation();
                 const menu = document.createElement("div");
                 menu.className = "chat-popup-menu";
-
                 menu.innerHTML = `<div class="rename-option">Rename</div><div class="delete-option">Delete</div>`;
                 div.appendChild(menu);
-            
+                //RENAME OPTION
                 menu.querySelector(".rename-option").addEventListener("click", async (e) => {
                     e.stopPropagation();
                     const newTitle = prompt("Rename chat",chat.title);
@@ -84,6 +113,7 @@ document.addEventListener("DOMContentLoaded",()=>{
                     () => menu.remove(),
                     { once: true }
                 );
+                //DELETE OPTION
                 menu.querySelector(".delete-option").addEventListener("click", async (e) => {
                     e.stopPropagation();
                     const confirmDelete=confirm(`Delete "${chat.title}"?\n\nThis action cannot be undone.`);
@@ -108,6 +138,7 @@ document.addEventListener("DOMContentLoaded",()=>{
                     }
                 });
             });
+            //SWITCH CHAT
             div.addEventListener("click", async () => {
                 currentChatId = chat.id;
                 await fetch(`/switch_chat/${chat.id}`, {
@@ -119,11 +150,11 @@ document.addEventListener("DOMContentLoaded",()=>{
                 div.classList.add("active");
                 loadDocuments();
                 loadMessages();
-                console.log("Switched to", chat.title);
+                //console.log("Switched to", chat.title);
             });
             chatList.appendChild(div);
-    });
-}
+    });}
+    //ADD MESSAGE 
     function addMessage(text, sender) {
         const message = document.createElement("div");
         message.classList.add("message");
@@ -140,9 +171,11 @@ document.addEventListener("DOMContentLoaded",()=>{
 
         return message;
     }
+    //UPLOAD BUTTON
     uploadButton.addEventListener("click",()=>{
-    fileInput.click();
+        fileInput.click();
     });
+    //TAKING DOCUMENTS AS INPUT
     fileInput.addEventListener("change",async()=>{
         const file=fileInput.files[0];
         if(!file){
@@ -171,6 +204,7 @@ document.addEventListener("DOMContentLoaded",()=>{
             alert("Upload failed.");
         }
     });
+    //SEND BUTTON 
     button.addEventListener("click",async()=>{
         const text=messageInput.value.trim();
         if(!text){
@@ -208,7 +242,7 @@ document.addEventListener("DOMContentLoaded",()=>{
                         answer += event.content;
                         thinkingMessage.innerHTML=marked.parse(answer);
                     }
-                    if(event.type==="sources"){
+                    if(event.type==="sources" && event.data.length>0){
                         answer+="\n\n---\n\n";
                         answer+="### Sources\n\n";
                         event.data.forEach(file=>{
@@ -233,12 +267,14 @@ document.addEventListener("DOMContentLoaded",()=>{
             messageInput.focus();
         }
     });
+    //MESSAGE SENT BY PRESSING ENTER
     messageInput.addEventListener("keydown",(event)=>{
         if(event.key==="Enter"){
             event.preventDefault();
             button.click();
         }}
     );
+    //NEW CHAT BUTTON
     newchatButton.addEventListener("click",async()=>{
         console.log("New Chat clicked");
         const response = await fetch("/new_chat",{
@@ -253,7 +289,7 @@ document.addEventListener("DOMContentLoaded",()=>{
     loadChats(currentChatId);
     loadDocuments();
     loadMessages();
-    const urlButton=document.getElementById("url-btn");
+    //URL BUTTON
     urlButton.addEventListener("click",async ()=>{
         const url=prompt("Enter a url")
         if(!url) return;
@@ -267,6 +303,10 @@ document.addEventListener("DOMContentLoaded",()=>{
             })
         });
         const result=await response.json();
+        if (!response.ok) {
+            alert(result.detail);
+            return;
+        }
         if(result.success){
             addMessage(`URL indexed successfully.\nIndexed ${result.chunks} chunks.`,"assistant");
             await loadDocuments();
@@ -274,5 +314,18 @@ document.addEventListener("DOMContentLoaded",()=>{
         else{
             alert("Failed.");
         }
+    });
+    chatSearch.addEventListener("input", ()=>{
+        const search=chatSearch.value.toLowerCase();
+        document.querySelectorAll(".chat-item").forEach(chat => {
+            const title=chat.querySelector(".chat-title").textContent.toLowerCase();
+            if (title.includes(search)) {
+                chat.style.display = "";
+            } else {
+                chat.style.display = "none";
+            }
+
+        });
+
     });
 });

@@ -10,4 +10,8 @@ def retrieve_documents(question, query_embedding, n_results=20):
     for metadata in results["metadatas"][0]:
         print(metadata["filename"], metadata["chunk_id"])
     print("=" * 60)
+    print("=" * 80)
+    print("Retrieved documents:")
+    print(results["metadatas"])
+    print("=" * 80)
     return results

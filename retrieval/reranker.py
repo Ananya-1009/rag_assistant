@@ -11,7 +11,21 @@ def rerank(query,results,top_k=6):
         key=lambda x: x[0],
         reverse=True
     )
-    ranked=ranked[:top_k]
+    THRESHOLD = 0.0
+    print("Reranker scores:")
+    for score, _, metadata, _ in ranked:
+        print(f"{score:.3f} -> {metadata['filename']}")
+    ranked = [
+        item for item in ranked
+        if item[0] >= THRESHOLD
+    ]
+    ranked = ranked[:top_k]
+    if not ranked:
+        return {
+            "documents": [[]],
+            "metadatas": [[]],
+            "distances": [[]],
+        }
     return {
         "documents": [[x[1] for x in ranked]],
         "metadatas": [[x[2] for x in ranked]],

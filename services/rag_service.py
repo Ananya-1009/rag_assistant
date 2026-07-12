@@ -5,6 +5,7 @@ from vector_store.chroma_store import ChromaStore
 from services.retrieval_service import retrieve_documents
 from storage.chat_manager import chat_manager
 from database.message_repository import get_messages
+from services.question_contextualizer import contextualize_question
 store=ChromaStore()
 def ask_question(question:str):
     prompt,results=prepare_question(question)
@@ -27,10 +28,22 @@ def ask_question(question:str):
         "answer":answer,
         "sources":sources,
     }
-def prepare_question(question:str):
-    query_embedding=generate_embedding(question)
-    results=retrieve_documents(question,query_embedding)
-    chat_id=chat_manager.get_chat_id()
-    history=get_messages(chat_id)[-11:-1]
-    prompt=build_prompt(question,results,history)
-    return prompt,results
+def prepare_question(question):
+    chat_id = chat_manager.get_chat_id()
+    conversation_history = get_messages(chat_id)
+    resolved_question = contextualize_question(
+        question,
+        conversation_history
+    )
+    print("Original question:", question)
+    print("Resolved question:", resolved_question)
+    query_embedding = generate_embedding(resolved_question)
+    results = retrieve_documents(
+        resolved_question,
+        query_embedding
+    )
+    prompt = build_prompt(
+        resolved_question,
+        results
+    )
+    return prompt, results

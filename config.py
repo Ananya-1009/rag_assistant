@@ -9,7 +9,10 @@ ALLOWED_EXTENSIONS={
     ".docx",
     ".txt",
     ".xlsx",
-    ".csv"
+    ".csv",
+    ".png",
+    ".jpg",
+    ".jpeg"
 }
 CHAT_MODEL="llama3.2:3b"
 EMBEDDING_MODEL="nomic-embed-text"

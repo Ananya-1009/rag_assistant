@@ -4,6 +4,14 @@ def add_document(chat_id,document_id,filename):
     conn.execute("""Insert into documents(chat_id,document_id,filename) values(?,?,?)""",(chat_id,document_id,filename))
     conn.commit()
     conn.close()
+def get_document(document_id):
+    conn = get_connection()
+    document = conn.execute("""SELECT * FROM documents WHERE document_id = ?""",(document_id,)
+    ).fetchone()
+
+    conn.close()
+
+    return document
 def get_documents(chat_id):
     conn=get_connection()
     documents=conn.execute("""Select * from documents where chat_id=? order by id desc""",(chat_id,)).fetchall()
@@ -15,5 +23,18 @@ def delete_documents(chat_id):
         "DELETE FROM documents WHERE chat_id=?",
         (chat_id,)
     )
+    conn.commit()
+    conn.close()
+def delete_document(document_id):
+    conn = get_connection()
+
+    conn.execute(
+        """
+        DELETE FROM documents
+        WHERE document_id = ?
+        """,
+        (document_id,)
+    )
+
     conn.commit()
     conn.close()
